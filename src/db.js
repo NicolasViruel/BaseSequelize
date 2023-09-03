@@ -1,33 +1,20 @@
 const {Sequelize, DataTypes} = require("sequelize");
 const user = "postgres";
 const pass = "pichones1";
+const User = require("./models/user");
+const Post = require("./models/Post");
 
 const dbname = "lecture";
 //recordar que postgres conecta al puerto 5432
 const dataBase = new Sequelize(
-    `postgres://${user}:${pass}@localhost:5432/${dbname}`
+    `postgres://${user}:${pass}@localhost:5432/${dbname}`,
+    //para que no salgan los textos de default
+    { logging: false }
 );
 
-//definimos el modelo de los registros que vamos a crear
-dataBase.define("User", {
-    id:{
-        type:DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true,
-    },
-    name:{
-        type: DataTypes.STRING,
-        allowNull: false, //no podemos dejar en blanco
-    },
-    last_name:{
-        type: DataTypes.STRING,
-        allowNull: false,
-        unique:true,
-    },
-    birth:{
-        type: DataTypes.DATEONLY,
-        allowNull: false,
-    },
-});
+User(dataBase);
+Post(dataBase);
 
-module.exports = dataBase;
+console.log(dataBase.models);
+//mandamos los modelos definidos por la database(que tiene los modelos)
+module.exports = { dataBase, ...dataBase.models};
